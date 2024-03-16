@@ -1,4 +1,5 @@
 venv/
+.env
 virtualMicroServ1/
 __pycache__/
 *.py[cod]
