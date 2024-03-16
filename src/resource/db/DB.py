@@ -1,5 +1,6 @@
-import mysql.connector
 import os
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
 
 class DB():
 
@@ -8,29 +9,23 @@ class DB():
         self.user = os.getenv("MYSQL_USER")
         self.password = os.getenv("MYSQL_PASSWORD")
         self.database = os.getenv("MYSQL_DB")
-        self.conexion = None
+        self.engine = None
+
+    def getURI(self):
+        return f'mysql://{self.user}:{self.password}@{self.host}/{self.database}'
 
     def connect(self):
         try:
-            conexion = mysql.connector.connect(
-                host = self.host,
-                user= self.user,
-                password = self.password,
-                database = self.database
-            )
-            if conexion.is_connected():
-                print("Conexión exitosa a la base de datos")
-                self.conexion = conexion
-                return conexion
-            else:
-                print("No se pudo conectar a la base de datos")
-                exit()
-        except mysql.connector.Error as error:
-            print("Error al conectar a la base de datos: ", error)
+            self.engine = create_engine(self.url)
+            print("Conexión exitosa a la base de datos")
+            return self.engine
+
+        except SQLAlchemyError as e:
+            print("Error al conectar a la base de datos:", e)
             exit()
         
-    def closeConnection(self):
-        if 'conexion' in locals() and self.conexion.is_connected():
-            self.conexion.close()
-        print("Conexión a Base de Datos cerrada con exito")
+    def closeConnection(self, con):
+        if self.engine is not None:
+            self.engine.dispose()
+            print("Conexión a la base de datos cerrada con éxito")
     
