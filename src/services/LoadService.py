@@ -1,7 +1,8 @@
 from src.resource.db.DB import DB
+from src.decorator.DateTimeString import DateTimeString
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import create_engine
-from sqlalchemy import MetaData, Table, Column, Integer, String, ForeignKeyConstraint, PrimaryKeyConstraint
+from sqlalchemy import MetaData, Table, Column, Integer, String, DateTime, ForeignKeyConstraint, PrimaryKeyConstraint
 from flask import  jsonify
 import pandas as pd
 
@@ -39,6 +40,9 @@ class LoadService():
                                 if not chunk.empty:
 
                                     data = chunk[tableInfo['columns']]
+
+                                    data = LoadService.checkDatetime(data, tableInfo['columns'])
+
                                     try:
                                         data.to_sql(tableInfo['table_name'], con=conn, if_exists='append', index=False)
                                         print("Datos insertados exitosamente en la tabla", tableInfo['table_name'])
@@ -60,6 +64,7 @@ class LoadService():
                                     if not chunk.empty:
                                         print(tableInfo['columns'])
                                         data = chunk[tableInfo['columns']]
+                                        data = LoadService.checkDatetime(data, tableInfo['columns'])
                                         try:
                                             data.to_sql(tableInfo['table_name'], con=conn, if_exists='append', index=False)
                                             print("Datos insertados exitosamente en la tabla", tableInfo['table_name'])
@@ -96,6 +101,8 @@ class LoadService():
                             for col_name in table_data["columns"]:
                                     if col_name.startswith("id"):  # Si la columna comienza con 'id', la definimos como Integer
                                         columns.append(Column(col_name, Integer))
+                                    elif col_name.startswith("date"):  # Si la columna comienza con 'date', la definimos como DateTime con su correspondiente decorator.
+                                        columns.append(Column(col_name, DateTimeString()))          
                                     else:
                                         columns.append(Column(col_name, String(255)))
                             table = Table(table_name, metadata, *columns)
@@ -123,5 +130,14 @@ class LoadService():
                 db.closeConnection(conn)
         else:
             return jsonify({'error': 'No files provided'}), 400
+    
 
+    @staticmethod
+    def checkDatetime(data, tableInfo):      ##En caso q el engine no tome correctamente el decorator
+
+        for col_name in tableInfo:
+            if col_name.startswith("date"):  
+                data[col_name] = pd.to_datetime(data[col_name], errors='coerce')  # Convertir a datetime
+        
+        return data
 
