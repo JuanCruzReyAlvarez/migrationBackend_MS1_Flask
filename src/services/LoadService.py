@@ -37,24 +37,32 @@ class LoadService():
 
                                     data = chunk[tableInfo['columns']]
                                     try:
-                                        data.to_sql(tableInfo['table_name'], con=conn, if_exists='replace', index=False)
+                                        data.to_sql(tableInfo['table_name'], con=conn, if_exists='append', index=False)
                                         print("Datos insertados exitosamente en la tabla", tableInfo['table_name'])
                                     except Exception as e:
                                         print("Error al insertar datos en la tabla", tableInfo['table_name'], ":", e)
-                                    print(888888)
 
                             # Si el archivo tiene más de 1000 filas, procesa en lotes
                             else:
-                                batch_size = 1000  # Tamaño máximo del lote
-                                num_batches = num_rows // batch_size + (1 if num_rows % batch_size > 0 else 0)  # Calcula el número de lotes
+                                batch_size = LoadService.maxRowsTransaction  # Tamaño máximo del lote
+                                print("MAS DE 1000")
+                                num_batches = num_rows // batch_size + (1 if num_rows % batch_size > 0 else 0)  # Calculo el número de lote
+                                print(num_batches)
                                 for i in range(num_batches):
                                     start_idx = i * batch_size
                                     end_idx = min((i + 1) * batch_size, num_rows)
                                     chunk = df[start_idx:end_idx]
+                                    print(chunk)
                                     # Inserta los datos en la base de datos
                                     if not chunk.empty:
-                                       data = chunk[[column['name'] for column in tableInfo['columns']]]
-                                       data.to_sql(tableInfo['table_name'], con=conn, if_exists='append', index=False)
+                                        print(tableInfo['columns'])
+                                        data = chunk[tableInfo['columns']]
+                                        try:
+                                            data.to_sql(tableInfo['table_name'], con=conn, if_exists='append', index=False)
+                                            print("Datos insertados exitosamente en la tabla", tableInfo['table_name'])
+                                        except Exception as e:
+                                            print("Error al insertar datos en la tabla", tableInfo['table_name'], ":", e)
+                                            
             except SQLAlchemyError as e:
                 return jsonify({'error': 'Error de base de datos: {}'.format(str(e))}), 500
             finally:
