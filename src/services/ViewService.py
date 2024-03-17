@@ -58,21 +58,13 @@ class ViewService():
 
         # Consulta SQL para obtener los datos
         query = """
-        SELECT d.id AS id_department, d.department, COUNT(e.id) AS hired
-        FROM employees e
-        JOIN departments d ON e.id_department = d.id
-        WHERE YEAR(e.datetime) = 2021
-        GROUP BY d.id, d.department
-        HAVING COUNT(e.id) > (
-            SELECT AVG(department_count.hired)
-            FROM (
-                SELECT COUNT(*) AS hired
-                FROM employees
-                WHERE YEAR(datetime) = 2021
-                GROUP BY id_department
-            ) AS department_count
-        )
-        ORDER BY hired DESC
+        Select d.id, d.department,  Count(e.id_department) AS hired 
+        FROM departments d JOIN employees e ON (d.id = e.id_department)
+        Group By d.id, d.department
+        HAVING hired  > 
+        (Select AVG(hired2021) FROM ( Select Count(ee.id_department) AS hired2021 FROM departments dd JOIN employees ee ON (dd.id = ee.id_department) 
+        WHERE YEAR(ee.datetime) = 2021  Group By dd.id, dd.department ) AS subquery) 
+        Order By hired DESC
         """
 
         # Leer datos desde la base de datos utilizando Pandas y la conexión de SQLAlchemy
