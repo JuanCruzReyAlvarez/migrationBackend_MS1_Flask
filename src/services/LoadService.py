@@ -112,9 +112,7 @@ class LoadService():
                                             print("Error al crear FK", ":", e)
                         # Creo las tablas en la base de datos
                         try:
-                            print("111111111111111111111111111111111111111")
                             metadata.create_all(engine)
-                            print("222222222222222222222222222222222222222")
                             
                         except Exception as e:
                                             print("Error al crear las tablas", ":", e)
