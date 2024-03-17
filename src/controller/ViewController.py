@@ -1,5 +1,6 @@
 from flask import  jsonify
 from src.services.ViewService import ViewService
+import base64
 
 class ViewController():
 
@@ -14,10 +15,7 @@ class ViewController():
                 file = hired_employees.to_csv(index=False)
 
                 # Devolver los datos como JSON con código de respuesta 202
-                return jsonify({
-                    'status': 'success',
-                    'data': file
-                }), 202
+                return file
 
             except Exception as e:
 
@@ -37,14 +35,10 @@ class ViewController():
                 
                 ## Ejecuto y consigo la vista
                 hired_employees = ViewService.viewEmployeesIdNameNumberWithRestriction2021()
-
                 file = hired_employees.to_csv(index=False)
 
                 # Devolver los datos como JSON con código de respuesta 202
-                return jsonify({
-                    'status': 'success',
-                    'data': file
-                }), 202
+                return file
 
             except Exception as e:
 
