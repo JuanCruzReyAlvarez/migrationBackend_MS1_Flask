@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from src.controller.ETLController import ETLController
 import traceback
 
@@ -9,10 +9,11 @@ from src.utils.Logger import Logger
 main = Blueprint('extract_blueprint', __name__)
 
 
-@main.route('/', methods=['POST'])
+@main.route('/extract', methods=['POST'])
 def extract():
     try:
             data = request.get_json()
+            print(data)
             return ETLController.extractData(data)
     except Exception as ex:
         Logger.add_to_log("error", str(ex))

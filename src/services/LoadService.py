@@ -109,7 +109,7 @@ class LoadService():
                             table.append_constraint(PrimaryKeyConstraint("id"))
                             
                             # Definimos las claves foráneas si están presentes en el JSON
-                            if "fk" in table_data:
+                            if "fk" in table_data and table_data['fk']:
                                 for column_name, referenced_table in table_data["fk"].items():
                                     try:
                                         print(column_name, referenced_table)
