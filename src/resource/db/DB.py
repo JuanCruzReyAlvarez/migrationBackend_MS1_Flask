@@ -6,17 +6,16 @@ class DB():
 
     def __init__(self):
         self.host = os.getenv("MYSQL_HOST")
+        self.port = os.getenv("MYSQL_PORT")
         self.user = os.getenv("MYSQL_USER")
         self.password = os.getenv("MYSQL_PASSWORD")
         self.database = os.getenv("MYSQL_DB")
-        self.engine = None
 
     def getURI(self):
-        return f'mysql://{self.user}:{self.password}@{self.host}/{self.database}'
-
+        return f"mysql+pymysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
     def connect(self):
         try:
-            self.engine = create_engine(self.url)
+            self.engine = create_engine(self.getURI())
             print("Conexión exitosa a la base de datos")
             return self.engine
 

@@ -12,9 +12,8 @@ main = Blueprint('extract_blueprint', __name__)
 @main.route('/', methods=['POST'])
 def extract():
     try:
-            data = request.json
-            message = ETLController.extractData(data)
-            return message
+            data = request.get_json()
+            return ETLController.extractData(data)
     except Exception as ex:
         Logger.add_to_log("error", str(ex))
         Logger.add_to_log("error", traceback.format_exc())

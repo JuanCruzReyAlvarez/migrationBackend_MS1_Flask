@@ -1,5 +1,6 @@
 from src.resource.db.DB import DB
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import create_engine
 from flask import  jsonify
 import pandas as pd
 
@@ -9,30 +10,38 @@ class LoadService():
     maxRowsTransaction = 1000
 
     @staticmethod
-    def loadData(self,files,tablesInfo):
+    def loadData(files,tablesInfo):
 
         if files:
-
-
+            
             db = DB()
             db.connect()
+            engine = db.connect()
+            
             try:
-                with db.engine.connect() as con:
-                    with con.begin():
+                with engine.connect() as conn:
+                    with conn.begin():
 
                         iterableDictionary = dict(zip(files,tablesInfo))
 
                         for csv_file, tableInfo in iterableDictionary.items():
-                            df = pd.read_csv(csv_file)
+                            df = pd.read_csv(csv_file, names = tableInfo['columns'])
                             num_rows = len(df)
+
                             # Si el archivo tiene menos de 1000 filas, procesa todas las filas juntas
                             if num_rows <= LoadService.maxRowsTransaction:
                                 chunk = df
+                                print(chunk)
                                 # Inserta los datos en la base de datos
                                 if not chunk.empty:
 
-                                    data = chunk[[column['name'] for column in tableInfo['columns']]]
-                                    data.to_sql(tableInfo['table_name'], con=con, if_exists='append', index=False)
+                                    data = chunk[tableInfo['columns']]
+                                    try:
+                                        data.to_sql(tableInfo['table_name'], con=conn, if_exists='replace', index=False)
+                                        print("Datos insertados exitosamente en la tabla", tableInfo['table_name'])
+                                    except Exception as e:
+                                        print("Error al insertar datos en la tabla", tableInfo['table_name'], ":", e)
+                                    print(888888)
 
                             # Si el archivo tiene más de 1000 filas, procesa en lotes
                             else:
@@ -45,11 +54,11 @@ class LoadService():
                                     # Inserta los datos en la base de datos
                                     if not chunk.empty:
                                        data = chunk[[column['name'] for column in tableInfo['columns']]]
-                                       data.to_sql(tableInfo['table_name'], con=con, if_exists='append', index=False)
+                                       data.to_sql(tableInfo['table_name'], con=conn, if_exists='append', index=False)
             except SQLAlchemyError as e:
                 return jsonify({'error': 'Error de base de datos: {}'.format(str(e))}), 500
             finally:
-                db.close()
+                db.closeConnection(conn)
             return jsonify({'message': 'Data uploaded successfully'}), 200
         else:
             return jsonify({'error': 'No files provided'}), 400

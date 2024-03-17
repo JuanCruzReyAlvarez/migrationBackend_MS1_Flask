@@ -1,25 +1,38 @@
 
 from src.services.ExtractService import ExtractService
-from src.services.TransformService import TransformService
+## from src.services.TransformService import TransformService
 from src.services.LoadService import LoadService
-import json
+from flask import  jsonify
 
 
 class ETLController():
 
-    @classmethod
-    def extractData(data):
+    @staticmethod
+    def extractData(json):
+            try:
+                
+                ## 1° -> Extract
+                data =  ExtractService.extractData(json) 
+                files = data[0] 
+                tablesInfo = data[1]
 
-        ## 1° -> Extract
-        data =  ExtractService.extractData(data) 
-        files = data[0] 
-        tablesInfo = data[1]
-        ## 2° -> Transform
-        ## filesTransformed = TransformService.transformData(files)  // -> No need in this project, it is prepared if it´s necessary 
+                ## 2° -> Transform
+                ## filesTransformed = TransformService.transformData(files)  // -> No need in this project, it is prepared if it´s necessary 
 
-        ## 3° -> Load
+                ## 3° -> Load
+                LoadService.loadData(files, tablesInfo)  ## batch transactions (1 up to 1000 rows) with one request
+            
 
-        LoadService.loadData(files, tablesInfo)  ## batch transactions (1 up to 1000 rows) with one request
-        
-    
-        return "Base de datos Migrada"
+
+                ## En caso de exito: 
+                response = jsonify({'message': 'La migración de datos ha sido completada exitosamente.'})
+                response.status_code = 202  # Código de estado HTTP 202 - Accepted
+                return response
+            except Exception as e:
+
+            # En caso de error:
+            
+                error_message = f"Error durante la migración de datos: {str(e)}"
+                response = jsonify({'message': error_message})
+                response.status_code = 500  # Código de estado HTTP 500 - Internal Server Error
+                return response
