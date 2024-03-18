@@ -10,17 +10,36 @@ In summary, the microservice architecture serves as a robust solution for facili
 
 
 
-First, create a virtual environment:
+## WITHOUT DOCKER
 
-    python -m virtualenv virtualMicroServ1
+    First, create a virtual environment:
 
-To activate the environment:
+        python -m virtualenv virtualMicroServ1
 
-    source virtualMicroServ1/bin/activate  // (In bash)
+    To activate the environment:
 
-To install necessary packages:
+        source virtualMicroServ1/bin/activate  // (In bash)
 
-    pip install -r requirements.txt
+    To install necessary packages:
 
-The system is set up for development with Flask. For production deployment, use Gunicorn, already installed.
+        pip install -r requirements.txt
 
+    The system is set up for development with Flask. For production deployment, use Gunicorn, already installed.
+
+    ## Testing :
+            Position: before src
+            Line: python -m unittest src.tests.decorators.Test_Decorator (Example)
+
+
+## WITH DOCKER
+
+
+    docker build -t backendflaskglobant . ## Creacion de Imagen
+
+    docker run -p 5000:5000 backendflaskglobant
+
+
+    ## Testing:
+
+        docker build -t backendflaskglobant -f Dockerfile.test .
+        docker run backendflaskglobant
