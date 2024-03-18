@@ -13,7 +13,6 @@ main = Blueprint('extract_blueprint', __name__)
 def extract():
     try:
             data = request.get_json()
-            print(data)
             return ETLController.extractData(data)
     except Exception as ex:
         Logger.add_to_log("error", str(ex))

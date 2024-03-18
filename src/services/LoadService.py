@@ -19,7 +19,6 @@ class LoadService():
         if files:
             
             db = DB()
-            db.connect()
             engine = db.connect()
             
             try:
