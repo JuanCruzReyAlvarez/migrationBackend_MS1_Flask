@@ -2,7 +2,7 @@
 from src.resource.db.DB import DB
 import unittest
 
-class TestDB(unittest.TestCase):
+class Test_DB(unittest.TestCase):
 
     def setUp(self):
         self.db = DB()

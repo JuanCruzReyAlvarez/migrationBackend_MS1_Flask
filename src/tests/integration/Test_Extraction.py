@@ -8,7 +8,7 @@ from config import config
 from flask import Request
 
 
-class TestExtraction(unittest.TestCase):
+class Test_Extraction(unittest.TestCase):
 
         def setUp(self):
 

@@ -6,7 +6,7 @@ from config import config
 
 
 
-class TestViewTwo(unittest.TestCase):
+class Test_ViewTwo(unittest.TestCase):
 
         def setUp(self):
 

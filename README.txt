@@ -26,6 +26,10 @@ In summary, the microservice architecture serves as a robust solution for facili
 
     The system is set up for development with Flask. For production deployment, use Gunicorn, already installed.
 
+    ## Testing :
+            Position: before src
+            Line: python -m unittest src.tests.decorators.Test_Decorator (Example)
+
 
 ## WITH DOCKER
 
@@ -33,3 +37,9 @@ In summary, the microservice architecture serves as a robust solution for facili
     docker build -t backendflaskglobant . ## Creacion de Imagen
 
     docker run -p 5000:5000 backendflaskglobant
+
+
+    ## Testing:
+
+        docker build -t backendflaskglobant -f Dockerfile.test .
+        docker run backendflaskglobant

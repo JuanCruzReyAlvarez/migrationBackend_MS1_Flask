@@ -2,7 +2,7 @@ import unittest
 from datetime import datetime
 from src.decorator.DateTimeString import DateTimeString 
 
-class TestDateTimeString(unittest.TestCase):
+class Test_DateTimeString(unittest.TestCase):
     def test_process_bind_param_string(self):
         # Prueba de que process_bind_param convierte correctamente una cadena a objeto datetime
         datetime_string = "2022-03-20T12:00:00"
