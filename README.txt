@@ -30,6 +30,6 @@ In summary, the microservice architecture serves as a robust solution for facili
 ## WITH DOCKER
 
 
-    docker build -t backendflaskglobant .
+    docker build -t backendflaskglobant . ## Creacion de Imagen
 
     docker run -p 5000:5000 backendflaskglobant
